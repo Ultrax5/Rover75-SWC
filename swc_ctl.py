@@ -49,23 +49,17 @@ ads = ADS.ADS1115(i2c)
 #Create single-ended input on channel 0
 ignition = AnalogIn(ads, ADS.P1)
 swc = AnalogIn(ads, ADS.P3)
-lock = threading.Lock()
-lock2 = threading.Lock()
 saved_swc_v=-1
 def main():
     mixer = prepare()
     loop(mixer)
 def loop(mixer):
-    global lock
-    global lock2
     global saved_swc_v
     mute_time = -1
     last_time = -1
     saved_volume = -1
     while True:
-#         with lock:
         temp=swc.voltage
-#         with lock2:
         temp_saved=saved_swc_v
         if temp > 1.7:
             saved_swc_v = (saved_swc_v+temp)/2
@@ -96,30 +90,7 @@ def loop(mixer):
                     os.system('systemctl poweroff')
         else:
             last_time = -1
-# def update_voltage():
-#     global saved_swc_v
-#     global lock
-#     while True:
-#         sum_v = 0
-#         for x in range(0, 10):
-#     #         print("co za kurwa jebana")
-#             with lock:
-#                 print("co tu sie odpierdala"+str(swc.voltage))
-#                 sum_v += swc.voltage
-#     #         print(sum_v)
-#         with lock2:
-#             saved_swc_v = sum_v/10
-#         time.sleep(2)
 def prepare():
-#     sum_v = 0
-#     global saved_swc_v
-#     for x in range(0, 10):
-# #         print("co za kurwa jebana")
-#         sum_v += swc.voltage
-# #         print(sum_v)
-#         time.sleep(0.1)
-#     saved_swc_v = sum_v/10
-#     print(saved_swc_v)
     while True:
         try:
             mixer = alsaaudio.Mixer("Master")
